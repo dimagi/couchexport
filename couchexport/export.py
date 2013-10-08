@@ -124,17 +124,6 @@ def get_writer(format):
         raise UnsupportedExportFormat("Unsupported export format: %s!" % format)
 
 def export_from_tables(tables, file, format, max_column_size=2000):
-    def clean_xml(data):
-        """
-        Removes and replaces characters disallowed in XML from message text.
-        """
-        dirty_chars = re.compile(
-            u'[\x00-\x08\x0b-\x1f\x7f-\x84\x86-\x9f\ud800-\udfff\ufdd0-\ufddf\ufffe-\uffff]')
-        messages = data[0][1][1:]
-        for message in messages:
-            message[4] = dirty_chars.sub(unicode('?'), message[4])
-        return data
-    tables = clean_xml(tables)
     tables = FormattedRow.wrap_all_rows(tables)
     writer = get_writer(format)
     writer.open(tables, file, max_column_size=max_column_size)
