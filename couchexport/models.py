@@ -8,7 +8,7 @@ import json
 from StringIO import StringIO
 import couchexport
 from couchexport.util import SerializableFunctionProperty,\
-    get_schema_index_view_keys, force_tag_to_list, clear_attachments
+    get_schema_index_view_keys, force_tag_to_list
 from dimagi.utils.decorators.memoized import memoized
 from dimagi.utils.mixins import UnicodeMixIn
 from dimagi.utils.couch.database import get_db, iter_docs
@@ -227,6 +227,7 @@ class ExportColumn(DocumentSchema):
     display = StringProperty()
     # signature: transform(val, doc) -> val
     transform = SerializableFunctionProperty(default=None)
+    tag = StringProperty()
 
     def to_config_format(self, selected=True):
         return {
@@ -234,6 +235,7 @@ class ExportColumn(DocumentSchema):
             "display": self.display,
             "transform": self.transform.dumps() if self.transform else None,
             "selected": selected,
+            "tag": self.tag,
         }
 
 class ExportTable(DocumentSchema):
