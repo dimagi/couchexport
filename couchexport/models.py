@@ -228,6 +228,7 @@ class ExportColumn(DocumentSchema):
     display = StringProperty()
     # signature: transform(val, doc) -> val
     transform = SerializableFunctionProperty(default=None)
+    tag = StringProperty()
 
     def to_config_format(self, selected=True):
         return {
@@ -235,6 +236,7 @@ class ExportColumn(DocumentSchema):
             "display": self.display,
             "transform": self.transform.dumps() if self.transform else None,
             "selected": selected,
+            "tag": self.tag,
         }
 
 class ExportTable(DocumentSchema):
