@@ -1,7 +1,7 @@
 from couchdbkit.client import Database
 from django.conf import settings
 from couchexport.models import ExportSchema
-from dimagi.utils.couch.database import get_db
+from datetime import datetime
 
 def build_latest_schema(schema_index):
     """
@@ -105,3 +105,66 @@ def extend_schema(schema, doc):
 
     # 5. We should have covered every case above, but if not, fail hard
     raise SchemaInferenceError("Mismatched schema (%r) and doc (%r)" % (schema, doc))
+
+BASIC_FORM_SCHEMA = {
+    "doc_type": "string",
+    "domain": "string",
+    "xmlns": "string",
+    "form": {
+        "@xmlns": "string",
+        "@uiVersion": "string",
+        "@name": "string",
+        "#type": "string",
+        "case": {
+            "@xmlns": "string",
+            "@date_modified": "string",
+            "create": {
+                "case_type": "string",
+                "owner_id": "string",
+                "case_name": "string"
+            },
+            "@user_id": "string",
+            "update": None,
+            "@case_id": "string"
+        },
+        "meta": {
+            "@xmlns": "string",
+            "username": "string",
+            "instanceID": "string",
+            "userID": "string",
+            "timeEnd": "string",
+            "appVersion": {
+                "@xmlns": "string",
+                "#text": "string"
+            },
+            "timeStart": "string",
+            "deviceID": "string"
+        },
+        "@version": "string"
+    },
+    "partial_submission": "string",
+    "_rev": "string",
+    "#export_tag": [
+       "string"
+    ],
+    "received_on": "string",
+    "app_id": "string",
+    "last_sync_token": None,
+    "submit_ip": "string",
+    "computed_": {
+    },
+    "openrosa_headers": {
+       "HTTP_DATE": "string",
+       "HTTP_ACCEPT_LANGUAGE": "string",
+       "HTTP_X_OPENROSA_VERSION": "string"
+    },
+    "date_header": "string",
+    "path": "string",
+    "computed_modified_on_": None,
+    "_id": "string"
+}
+
+def create_basic_form_checkpoint(index):
+    checkpoint = ExportSchema(seq="0", schema=BASIC_FORM_SCHEMA, timestamp=datetime.utcnow(), index=index)
+    checkpoint.save()
+    return checkpoint
