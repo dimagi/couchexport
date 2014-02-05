@@ -285,7 +285,8 @@ class ExportTable(DocumentSchema):
         # hack: manually remove any references to _attachments at runtime
         data['columns'] = [c for c in data['columns'] if not c['index'].startswith("_attachments.")]
         ret = super(ExportTable, cls).wrap(data)
-        ret.append(ComplexExportColumn())
+        ret.columns.append(ComplexExportColumn())
+        return ret
 
     @classmethod
     def default(cls, index):
