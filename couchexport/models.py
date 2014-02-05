@@ -257,6 +257,20 @@ class ExportColumn(DocumentSchema):
             "show": self.show,
         }
 
+class ComplexExportColumn(ExportColumn):
+    """
+    A single column config that can represent multiple actual columns in the excel sheet.
+    """
+
+    def get_headers(self):
+        """
+        Return a list of headers that this column contributes to
+        """
+        return ['proof', 'of', 'concept']
+
+    def get_data(self, value):
+        return ['c1-%s' % value, 'c2-%s' % value, 'c3-%s' % value]
+
 class ExportTable(DocumentSchema):
     """
     A table configuration, for export
@@ -270,7 +284,8 @@ class ExportTable(DocumentSchema):
     def wrap(cls, data):
         # hack: manually remove any references to _attachments at runtime
         data['columns'] = [c for c in data['columns'] if not c['index'].startswith("_attachments.")]
-        return super(ExportTable, cls).wrap(data)
+        ret = super(ExportTable, cls).wrap(data)
+        ret.append(ComplexExportColumn())
 
     @classmethod
     def default(cls, index):
@@ -297,6 +312,9 @@ class ExportTable(DocumentSchema):
         from couchexport.export import FormattedRow
         headers = []
         for col in self.columns:
+            # check type
+            # if simple do below
+            # if complex, ask the complex col for a list of headers and add them all
             display = col.get_display()
             if col.index == 'id':
                 id_len = len(
@@ -325,6 +343,8 @@ class ExportTable(DocumentSchema):
     def get_items_in_order(self, row):
         row_data = list(row.get_data())
         for column in self.columns:
+            # if normal column, do below
+            # if compound iterate through values
             try:
                 i = self.row_positions_by_index[column.index]
                 val = row_data[i]
@@ -383,14 +403,17 @@ class BaseSavedExportSchema(Document):
 
     def export_data_async(self, format=None, **kwargs):
         format = format or self.default_format
+        tmp, checkpoint = self.get_export_files(format=format, **kwargs)
+        from django.http import HttpResponse
+        return HttpResponse("done")
         download = DownloadBase()
-        download.set_task(couchexport.tasks.export_async.delay(
-            self,
-            download.download_id,
-            format=format,
-            **kwargs
-        ))
-        return download.get_start_response()
+        # download.set_task(couchexport.tasks.export_async.delay(
+        #     self,
+        #     download.download_id,
+        #     format=format,
+        #     **kwargs
+        # ))
+        # return download.get_start_response()
 
     @property
     def table_name(self):
