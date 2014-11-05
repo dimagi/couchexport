@@ -3,7 +3,7 @@ from zipfile import ZipFile
 from django.core.servers.basehttp import FileWrapper
 from couchexport.files import TempBase
 from couchexport.models import FakeSavedExportSchema, SavedExportSchema
-from django.http import HttpResponse, HttpResponseNotFound, StreamingHttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from StringIO import StringIO
 from unidecode import unidecode
 from couchexport.util import get_schema_index_view_keys
@@ -59,7 +59,7 @@ def export_response(file, format, filename, checkpoint=None):
         # I don't know why we need to close the file. Keeping around.
         file.close()
     else:
-        response = StreamingHttpResponse(FileWrapper(file), mimetype=format.mimetype)
+        response = HttpResponse(FileWrapper(file), mimetype=format.mimetype)
 
     if format.download:
         try:
