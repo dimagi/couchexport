@@ -31,7 +31,7 @@ class Command(LabelCommand):
             return
 
         # allow passing an index
-        if len(args == 3):
+        if len(args) == 3:
             index = int(args[2])
             full_exports = [config.full_exports[index]]
         else:
