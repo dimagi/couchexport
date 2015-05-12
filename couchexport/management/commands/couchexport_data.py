@@ -17,12 +17,27 @@ class Command(LabelCommand):
             
         export_id = args[0]
         output_dir = args[1]
+
         try:
             config = GroupExportConfiguration.get(export_id)
         except ResourceNotFound:
             raise CommandError("Couldn't find an export with id %s" % export_id)
-        
-        for export_config in config.full_exports:
+
+        # hack - just list the exports by index using this magic value
+        if output_dir == 'list':
+            for i, export_conf in enumerate(config.full_exports):
+                print '{0}: {1}'.format(i, export_conf.name)
+            print '\nTo run an individual export, run ./manage.py couchexport_data export_all_forms couch [id]'
+            return
+
+        # allow passing an index
+        if len(args == 3):
+            index = int(args[2])
+            full_exports = [config.full_exports[index]]
+        else:
+            full_exports = config.full_exports
+
+        for export_config in full_exports:
             print "exporting %s to %s" % (export_config.name, output_dir)
             # special case couch storage
             if output_dir == "couch":
@@ -45,4 +60,3 @@ class Command(LabelCommand):
             else:
                 with open(os.path.join(output_dir, export_config.filename), "wb") as f:
                     export(export_config.index, f, format=export_config.format)
-                
