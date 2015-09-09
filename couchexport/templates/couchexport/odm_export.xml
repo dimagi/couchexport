@@ -1,0 +1,33 @@
+<ODM xmlns="http://www.cdisc.org/ns/odm/v1.3"
+     xmlns:OpenClinica="http://www.openclinica.org/ns/odm_ext_v130/v3.1"
+     xmlns:OpenClinicaRules="http://www.openclinica.org/ns/rules/v3.1"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     FileOID="{{ file_oid }}"
+     Description="{{ file_description }}"
+     CreationDateTime="{{ creation_datetime }}"
+     FileType="Snapshot"
+     ODMVersion="1.3"
+     xsi:schemaLocation="http://www.cdisc.org/ns/odm/v1.3 OpenClinica-ODM1-3-0-OC2-0.xsd">
+  <Study OID="{{ study_oid }}">
+    <GlobalVariables>
+      <StudyName>{{ study_name }}</StudyName>
+      <StudyDescription>{{ study_description }}</StudyDescription>
+      <ProtocolName>{{ protocol_name }}</ProtocolName>
+    </GlobalVariables>
+
+    {{ basic_definitions }}
+
+    {{ metadata_version }}
+
+  </Study>
+
+  <AdminData StudyOID="{{ study_oid }}">
+    <!-- ... -->
+  </AdminData>
+
+  <ClinicalData StudyOID="{{ study_oid }}" MetaDataVersionOID="v1.0.0">
+    {% for subject in subjects %}
+        {% include "couchexport/odm_export_row.xml" %}
+    {% endfor %}
+  </ClinicalData>
+</ODM>

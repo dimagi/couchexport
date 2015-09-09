@@ -1,0 +1,35 @@
+
+    <SubjectData SubjectKey="{{ subject.subject_key }}"
+                 OpenClinica:StudySubjectID="{{ subject.study_subject_id }}">
+      {% for event in subject.events %}
+      <StudyEventData StudyEventOID="{{ event.study_event_oid }}">
+        {% for form in event.forms %}
+        <FormData FormOID="{{ form.form_oid }}">
+          {% for item_group in form.item_groups %}
+          <ItemGroupData ItemGroupOID="{{ item_group.item_group_oid }}"
+                         {% if item_group.repeat_key %}ItemGroupRepeatKey="{{ item_group.repeat_key }}"
+                         {% endif %}TransactionType="Insert">
+            {% for item in item_group.items %}
+            {% if item.elements %}
+            <ItemData ItemOID="{{ item.item_oid }}" Value="{{ item.value }}">
+              {% for elem in item.elements %}
+              {% if elem.value %}
+              <{{ elem.name }} {% for attr in elem.attributes %}{{ attr.name }}="{{ attr.value }}" {% endfor %}>
+                {{ elem.value }}
+              </{{ elem.name }}>
+              {% else %}
+              <{{ elem.name }} {% for attr in elem.attributes %}{{ attr.name }}="{{ attr.value }}" {% endfor %}/>
+              {% endif %}
+              {% endfor %}
+            </ItemData>
+            {% else %}
+            <ItemData ItemOID="{{ item.item_oid }}" Value="{{ item.value }}"/>
+            {% endif %}
+            {% endfor %}
+          </ItemGroupData>
+          {% endfor %}
+        </FormData>
+        {% endfor %}
+      </StudyEventData>
+      {% endfor %}
+    </SubjectData>

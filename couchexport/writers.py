@@ -479,3 +479,23 @@ class ZippedHtmlExportWriter(ZippedExportWriter):
     writer_class = HtmlFileWriter
     table_file_extension = ".html"
 
+
+class CdiscOdmExportWriter(OnDiskExportWriter):
+    """
+    Write tables to a single CDISC ODM-formatted XML file.
+    """
+    def _write_final_result(self):
+        # TODO: See HtmlExportWriter
+        # template is couchexport/odm_export.xml
+        # There are two tables:
+        #  1. study details
+        #  2. subjects
+        #
+        # The template also accepts XML strings in params "basic_definitions" and "metadata_version" which are
+        # study-specific. e.g.
+        #  * custom/novartis/templates/novartis/metadata_version.xml
+        #  * custom/novartis/templates/novartis/basic_definitions.xml
+        #
+        # Study details can be dumped at the top level of context. List of subjects are passed in param "subjects"
+        #
+        raise NotImplemented  # yet
